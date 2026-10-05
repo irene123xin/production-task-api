@@ -1,0 +1,23 @@
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+exclude = ["alembic"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q --strict-markers"
+markers = ["postgres: behavior that is meaningful only on PostgreSQL"]
+
+[tool.pytest_env]
+DATABASE_URL = { value = "sqlite+pysqlite:///:memory:", skip_if_set = true }
+TEST_DATABASE_URL = { value = "sqlite+pysqlite:///:memory:", skip_if_set = true }
+JWT_SECRET_KEY = { value = "test-only-secret-key-at-least-32-bytes", skip_if_set = true }
