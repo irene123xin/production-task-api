@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -114,8 +116,10 @@ def test_postgres_returns_timezone_aware_timestamps(
     if database_backend != "postgresql":
         pytest.skip("Timezone round-trip behavior is PostgreSQL-specific")
     task = create_task(client, auth_headers)
-    assert task["created_at"].endswith("+00:00")
-    assert task["updated_at"].endswith("+00:00")
+    created_at = datetime.fromisoformat(task["created_at"])
+    updated_at = datetime.fromisoformat(task["updated_at"])
+    assert created_at.tzinfo is not None and created_at.utcoffset().total_seconds() == 0
+    assert updated_at.tzinfo is not None and updated_at.utcoffset().total_seconds() == 0
 
 
 def test_task_routes_require_authentication(client: TestClient) -> None:
